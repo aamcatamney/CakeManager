@@ -19,9 +19,9 @@ namespace CakeManager.Controllers
     }
 
     [HttpGet]
-    public async Task<List<string>> GetFilesAsync() => await this.cakeService.GetFilesAsync();
+    public async Task<List<string>> GetFiles() => await this.cakeService.GetFilesAsync();
 
-    [HttpPost]
-    public async Task RunFileAsync(string FilePath) => await this.cakeService.RunFileAsync(FilePath);
+    [HttpGet, Route("run")]
+    public async Task RunFile(string FilePath) => await this.cakeService.RunFileAsync(FilePath);
   }
 }

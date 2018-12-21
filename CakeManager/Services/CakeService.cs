@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -26,13 +27,18 @@ namespace CakeManager.Services
     public async Task RunFileAsync(string FilePath)
     {
       var settings = await this.settingsService.GetSettingsAsync();
-      var logFile = Path.Combine(settings.LogDir, "MyFile.txt");
+      var logFile = Path.Combine(settings.LogDir, $"Log-{DateTime.UtcNow.ToString("yyyymmddHHMMss")}.txt");
+      var working = Path.Combine(settings.WorkingDir, Path.GetFileNameWithoutExtension(FilePath));
+      if (Directory.Exists(working)) Directory.Delete(working, true);
+      Directory.CreateDirectory(working);
+      File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "Resources", "build.ps1"), Path.Combine(working, "build.ps1"));
+      File.Copy(FilePath, Path.Combine(working, Path.GetFileName(FilePath)));
       await Task.Run(() =>
        {
          var psi = new ProcessStartInfo();
          psi.FileName = "powershell";
-         psi.Arguments = $" {FilePath}";
-         psi.WorkingDirectory = settings.CakeDir;
+         psi.Arguments = ".\\build.ps1";
+         psi.WorkingDirectory = working;
          psi.CreateNoWindow = true;
          psi.UseShellExecute = false;
          psi.RedirectStandardOutput = true;

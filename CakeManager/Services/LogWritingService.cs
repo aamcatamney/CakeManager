@@ -29,7 +29,10 @@ namespace CakeManager.Services
           if (queue.Count > 0)
           {
             var i = queue.Dequeue();
-            File.AppendAllLines(i.Path, new[] { i.Contents });
+            if (i != null)
+            {
+              File.AppendAllLines(i.Path, new[] { i.Contents });
+            }
           }
           writting = false;
           if (queue.Count > 0)
